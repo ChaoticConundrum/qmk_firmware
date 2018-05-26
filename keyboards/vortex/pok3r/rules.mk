@@ -4,6 +4,7 @@ SRC = \
 	ht32.c \
 	util.c \
 	matrix.c \
+	suspend.c \
 	eeprom.c \
 	pok3r_led.c \
 	backlight.c

@@ -112,6 +112,38 @@
     PAFIO(PORT, N, LINE_OD_RED3, AFIO_GPIO) | \
 0)
 
+#define PESSR_L(LINE) ((PAL_PAD(LINE) < 8) ? (HT32_PAL_IDX(LINE) << (PAL_PAD(LINE) * 4uL)) : 0)
+#define PESSR_H(LINE) ((PAL_PAD(LINE) >=8) ? (HT32_PAL_IDX(LINE) << ((PAL_PAD(LINE) - 8uL) * 4uL)) : 0)
+
+/* doesn't work due to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=4210 */
+/*
+#define PESSR(N, LINE) ((N) ? (PESSR_H(LINE)) : (PESSR_L(LINE)))
+#define ESSR_BITS(N) (\
+    PESSR(N, LINE_COL1) | \
+    PESSR(N, LINE_COL2) | \
+    PESSR(N, LINE_COL3) | \
+    PESSR(N, LINE_COL4) | \
+    PESSR(N, LINE_COL5) | \
+    PESSR(N, LINE_COL6) | \
+    PESSR(N, LINE_COL7) | \
+    PESSR(N, LINE_COL8) | \
+0)
+*/
+
+#define ESSR_BITS_0 (\
+    PESSR_L(LINE_COL1) | \
+    PESSR_L(LINE_COL2) | \
+    PESSR_L(LINE_COL3) | \
+    PESSR_L(LINE_COL4) | \
+0)
+
+#define ESSR_BITS_1 (\
+    PESSR_H(LINE_COL5) | \
+    PESSR_H(LINE_COL6) | \
+    PESSR_H(LINE_COL7) | \
+    PESSR_H(LINE_COL8) | \
+0)
+
 /**
  * @brief   PAL setup.
  * @details Digital I/O ports static configuration as defined in @p board.h.
@@ -183,8 +215,9 @@ const PALConfig pal_default_config = {
         .CFG[0] = AF_BITS(IOPORTE, 0),
         .CFG[1] = AF_BITS(IOPORTE, 1),
     },
-    .ESSR[0] = 0x00000000,
-    .ESSR[1] = 0x00000000,
+    // Enable Column Pins for EXTI
+    .ESSR[0] = ESSR_BITS_0,
+    .ESSR[1] = ESSR_BITS_1,
 };
 
 const ioline_t row_list[MATRIX_ROWS] = {

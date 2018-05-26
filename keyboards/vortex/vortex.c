@@ -20,6 +20,7 @@
 #include "raw_hid.h"
 #include "debug.h"
 #include "version.h"
+#include "usb_descriptor.h"
 
 #include "vortex.h"
 #include "proto.h"

@@ -42,10 +42,14 @@ void suspend_power_down(void) {
     }
     /* enable deep sleep */
     SCB->SCR |= SCR_DEEPSLEEP_Mask;
+    /* enable usb low power mode */
+    USB->CSR |= USBCSR_LPMODE | USBCSR_PDWN;
     /* sleep */
     __WFI();
+    /* disable usb low power mode */
+    USB->CSR &= ~(USBCSR_LPMODE | USBCSR_PDWN);
     /* disable deep sleep */
-    SCB->SCR &= SCR_DEEPSLEEP_Mask;
+    SCB->SCR &= ~SCR_DEEPSLEEP_Mask;
     /* disable all rows */
     for (int row = 0; row < MATRIX_ROWS; row++) {
         palSetLine(row_list[row]);

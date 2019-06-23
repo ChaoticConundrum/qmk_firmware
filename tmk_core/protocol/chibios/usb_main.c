@@ -57,6 +57,10 @@ static virtual_timer_t keyboard_idle_timer;
 static void keyboard_idle_timer_cb(void *arg);
 
 report_keyboard_t keyboard_report_sent = {{0}};
+#define KBD_REPORT_QUEUE_LEN 8
+report_keyboard_t keyboard_report_queue[KBD_REPORT_QUEUE_LEN];
+uint8_t keyboard_report_queue_write;
+uint8_t keyboard_report_queue_read;
 #ifdef MOUSE_ENABLE
 report_mouse_t mouse_report_blank = {0};
 #endif /* MOUSE_ENABLE */
@@ -630,17 +634,23 @@ void init_usb_driver(USBDriver *usbp) {
  */
 /* keyboard IN callback hander (a kbd report has made it IN) */
 void kbd_in_cb(USBDriver *usbp, usbep_t ep) {
-  /* STUB */
-  (void)usbp;
-  (void)ep;
+  if (keyboard_report_queue_read != keyboard_report_queue_write) {
+    osalSysLockFromISR();
+    usbStartTransmitI(usbp, ep, (uint8_t *)&keyboard_report_queue[keyboard_report_queue_read], KEYBOARD_EPSIZE);
+    keyboard_report_queue_read = (keyboard_report_queue_read + 1) % KBD_REPORT_QUEUE_LEN;
+    osalSysUnlockFromISR();
+  }
 }
 
 #ifdef NKRO_ENABLE
 /* nkro IN callback hander (a nkro report has made it IN) */
 void nkro_in_cb(USBDriver *usbp, usbep_t ep) {
-  /* STUB */
-  (void)usbp;
-  (void)ep;
+  if (keyboard_report_queue_read != keyboard_report_queue_write) {
+    osalSysLockFromISR();
+    usbStartTransmitI(usbp, ep, (uint8_t *)&keyboard_report_queue[keyboard_report_queue_read], sizeof(report_keyboard_t));
+    keyboard_report_queue_read = (keyboard_report_queue_read + 1) % KBD_REPORT_QUEUE_LEN;
+    osalSysUnlockFromISR();
+  }
 }
 #endif /* NKRO_ENABLE */
 
@@ -711,7 +721,10 @@ void send_keyboard(report_keyboard_t *report) {
        * every iteration - otherwise the system will remain locked,
        * no interrupts served, so USB not going through as well.
        * Note: for suspend, need USB_USE_WAIT == TRUE in halconf.h */
-            osalThreadSuspendS(&(&USB_DRIVER)->epc[NKRO_IN_EPNUM]->in_state->thread);
+          keyboard_report_queue[keyboard_report_queue_write] = *report;
+          keyboard_report_queue_write = (keyboard_report_queue_write + 1) % KBD_REPORT_QUEUE_LEN;
+          osalSysUnlock();
+          return;
         }
         if (!usbGetTransmitStatusI(&USB_DRIVER, NKRO_IN_EPNUM)) {
             usbStartTransmitI(&USB_DRIVER, NKRO_IN_EPNUM, (uint8_t *)report, sizeof(report_keyboard_t));
@@ -728,7 +741,10 @@ void send_keyboard(report_keyboard_t *report) {
        * every iteration - otherwise the system will remain locked,
        * no interrupts served, so USB not going through as well.
        * Note: for suspend, need USB_USE_WAIT == TRUE in halconf.h */
-            osalThreadSuspendS(&(&USB_DRIVER)->epc[KEYBOARD_IN_EPNUM]->in_state->thread);
+          keyboard_report_queue[keyboard_report_queue_write] = *report;
+          keyboard_report_queue_write = (keyboard_report_queue_write + 1) % KBD_REPORT_QUEUE_LEN;
+          osalSysUnlock();
+          return;
         }
         if (!usbGetTransmitStatusI(&USB_DRIVER, KEYBOARD_IN_EPNUM)) {
             usbStartTransmitI(&USB_DRIVER, KEYBOARD_IN_EPNUM, (uint8_t *)report, KEYBOARD_EPSIZE);

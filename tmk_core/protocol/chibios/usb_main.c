@@ -388,7 +388,7 @@ static void usb_event_cb(USBDriver *usbp, usbevent_t event) {
         sduWakeupHookI(&drivers.array[i].driver);
         chSysUnlockFromISR();
       }
-    suspend_wakeup_init();
+    //suspend_wakeup_init();
 #ifdef SLEEP_LED_ENABLE
     sleep_led_disable();
     // NOTE: converters may not accept this

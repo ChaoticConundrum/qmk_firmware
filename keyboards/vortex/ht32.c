@@ -1,3 +1,4 @@
+#include "hal.h"
 #include "vortex.h"
 
 void firmware_reset(uint32_t key) {

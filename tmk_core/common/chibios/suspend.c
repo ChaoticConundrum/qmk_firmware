@@ -25,7 +25,7 @@ void suspend_idle(uint8_t time) {
  *
  * FIXME: needs doc
  */
-void suspend_power_down(void) {
+__attribute__ ((weak)) void suspend_power_down(void) {
 	// TODO: figure out what to power down and how
 	// shouldn't power down TPM/FTM if we want a breathing LED
 	// also shouldn't power down USB

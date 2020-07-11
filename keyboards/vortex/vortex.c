@@ -20,6 +20,7 @@
 #include "raw_hid.h"
 #include "debug.h"
 #include "version.h"
+#include "usb_descriptor.h"
 
 #include "vortex.h"
 #include "proto.h"
@@ -448,18 +449,4 @@ void OVERRIDE raw_hid_receive(uint8_t *data_in, uint8_t length) {
 
 void OVERRIDE console_receive(uint8_t *data, uint8_t length) {
     //printf("Console recv %d\n", length);
-}
-
-void OVERRIDE led_set_kb(uint8_t usb_led) {
-    static uint8_t prev = 0;
-    if (usb_led != prev) {
-        printf("Set LED: %02x\n", usb_led);
-    }
-    prev = usb_led;
-    if ((usb_led >> USB_LED_CAPS_LOCK) & 1) {
-//        palClearLine(LINE_LED65);
-    } else {
-//        palSetLine(LINE_LED65);
-    }
-    led_set_user(usb_led);
 }

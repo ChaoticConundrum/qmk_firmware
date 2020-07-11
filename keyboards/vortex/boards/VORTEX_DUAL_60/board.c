@@ -36,6 +36,22 @@
     PBIT(PORT, LINE_ROW8) | \
     PBIT(PORT, LINE_ROW9) | \
     PBIT(PORT, LINE_SPI_CS) | \
+    PBIT(PORT, LINE_LED_SHIFT_DATA) | \
+    PBIT(PORT, LINE_LED_SHIFT_CLK) | \
+    PBIT(PORT, LINE_LED_SHIFT_CLR) | \
+    PBIT(PORT, LINE_TROW1) | \
+    PBIT(PORT, LINE_TCOL1) | \
+    PBIT(PORT, LINE_TCOL2) | \
+    PBIT(PORT, LINE_TCOL3) | \
+    PBIT(PORT, LINE_TCOL4) | \
+    PBIT(PORT, LINE_TCOL5) | \
+    PBIT(PORT, LINE_TCOL6) | \
+    PBIT(PORT, LINE_TCOL7) | \
+    PBIT(PORT, LINE_TCOL8) | \
+    PBIT(PORT, LINE_LED_VOLTAGE) | \
+    PBIT(PORT, LINE_OD_RED1) | \
+    PBIT(PORT, LINE_OD_RED2) | \
+    PBIT(PORT, LINE_OD_RED3) | \
 0)
 
 #define IN_BITS(PORT) (\
@@ -47,6 +63,13 @@
     PBIT(PORT, LINE_COL6) | \
     PBIT(PORT, LINE_COL7) | \
     PBIT(PORT, LINE_COL8) | \
+0)
+
+#define OD_BITS(PORT) (\
+    PBIT(PORT, LINE_LED_VOLTAGE) | \
+    PBIT(PORT, LINE_OD_RED1) | \
+    PBIT(PORT, LINE_OD_RED2) | \
+    PBIT(PORT, LINE_OD_RED3) | \
 0)
 
 #define AF_BITS(PORT, N) (\
@@ -71,6 +94,54 @@
     PAFIO(PORT, N, LINE_SPI_MOSI, AFIO_SPI)  | \
     PAFIO(PORT, N, LINE_SPI_MISO, AFIO_SPI)  | \
     PAFIO(PORT, N, LINE_SPI_CS,   AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_LED_SHIFT_DATA, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_LED_SHIFT_CLK, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_LED_SHIFT_CLR, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_TROW1, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_TCOL1, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_TCOL2, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_TCOL3, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_TCOL4, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_TCOL5, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_TCOL6, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_TCOL7, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_TCOL8, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_LED_VOLTAGE, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_OD_RED1, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_OD_RED2, AFIO_GPIO) | \
+    PAFIO(PORT, N, LINE_OD_RED3, AFIO_GPIO) | \
+0)
+
+#define PESSR_L(LINE) ((PAL_PAD(LINE) < 8) ? (HT32_PAL_IDX(LINE) << (PAL_PAD(LINE) * 4uL)) : 0)
+#define PESSR_H(LINE) ((PAL_PAD(LINE) >=8) ? (HT32_PAL_IDX(LINE) << ((PAL_PAD(LINE) - 8uL) * 4uL)) : 0)
+
+/* doesn't work due to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=4210 */
+/*
+#define PESSR(N, LINE) ((N) ? (PESSR_H(LINE)) : (PESSR_L(LINE)))
+#define ESSR_BITS(N) (\
+    PESSR(N, LINE_COL1) | \
+    PESSR(N, LINE_COL2) | \
+    PESSR(N, LINE_COL3) | \
+    PESSR(N, LINE_COL4) | \
+    PESSR(N, LINE_COL5) | \
+    PESSR(N, LINE_COL6) | \
+    PESSR(N, LINE_COL7) | \
+    PESSR(N, LINE_COL8) | \
+0)
+*/
+
+#define ESSR_BITS_0 (\
+    PESSR_L(LINE_COL1) | \
+    PESSR_L(LINE_COL2) | \
+    PESSR_L(LINE_COL3) | \
+    PESSR_L(LINE_COL4) | \
+0)
+
+#define ESSR_BITS_1 (\
+    PESSR_H(LINE_COL5) | \
+    PESSR_H(LINE_COL6) | \
+    PESSR_H(LINE_COL7) | \
+    PESSR_H(LINE_COL8) | \
 0)
 
 /**
@@ -85,7 +156,7 @@ const PALConfig pal_default_config = {
         .INE = IN_BITS(IOPORTA),
         .PU = IN_BITS(IOPORTA),
         .PD = 0x0000,
-        .OD = 0x0000,
+        .OD = OD_BITS(IOPORTA),
         .DRV = 0x0000,
         .LOCK = 0x0000,
         .OUT = 0x0000,
@@ -98,7 +169,7 @@ const PALConfig pal_default_config = {
         .INE = IN_BITS(IOPORTB),
         .PU = IN_BITS(IOPORTB),
         .PD = 0x0000,
-        .OD = 0x0000,
+        .OD = OD_BITS(IOPORTB),
         .DRV = 0x0000,
         .LOCK = 0x0000,
         .OUT = 0x0000,
@@ -111,7 +182,7 @@ const PALConfig pal_default_config = {
         .INE = IN_BITS(IOPORTC),
         .PU = IN_BITS(IOPORTC),
         .PD = 0x0000,
-        .OD = 0x0000,
+        .OD = OD_BITS(IOPORTC),
         .DRV = 0x0000,
         .LOCK = 0x0000,
         .OUT = 0x0000,
@@ -124,7 +195,7 @@ const PALConfig pal_default_config = {
         .INE = IN_BITS(IOPORTD),
         .PU = IN_BITS(IOPORTD),
         .PD = 0x0000,
-        .OD = 0x0000,
+        .OD = OD_BITS(IOPORTD),
         .DRV = 0x0000,
         .LOCK = 0x0000,
         .OUT = 0x0000,
@@ -137,15 +208,16 @@ const PALConfig pal_default_config = {
         .INE = IN_BITS(IOPORTE),
         .PU = IN_BITS(IOPORTE),
         .PD = 0x0000,
-        .OD = 0x0000,
+        .OD = OD_BITS(IOPORTE),
         .DRV = 0x0000,
         .LOCK = 0x0000,
         .OUT = 0x0000,
         .CFG[0] = AF_BITS(IOPORTE, 0),
         .CFG[1] = AF_BITS(IOPORTE, 1),
     },
-    .ESSR[0] = 0x00000000,
-    .ESSR[1] = 0x00000000,
+    // Enable Column Pins for EXTI
+    .ESSR[0] = ESSR_BITS_0,
+    .ESSR[1] = ESSR_BITS_1,
 };
 
 const ioline_t row_list[MATRIX_ROWS] = {
@@ -242,4 +314,5 @@ void boardInit(void) {
 #if HAL_USE_UART == TRUE
     uart_init();
 #endif
+    palSetLine(LINE_LED_VOLTAGE); //led voltage off after boot
 }

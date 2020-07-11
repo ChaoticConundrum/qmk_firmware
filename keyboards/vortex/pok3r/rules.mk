@@ -4,7 +4,9 @@ SRC = \
 	ht32.c \
 	util.c \
 	matrix.c \
+	suspend.c \
 	eeprom.c \
+	pok3r_led.c \
 	backlight.c
 
 LAYOUTS += 60_ansi 60_ansi_split_rshift 60_iso

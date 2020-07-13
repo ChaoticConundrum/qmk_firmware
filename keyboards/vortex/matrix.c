@@ -66,10 +66,19 @@ uint8_t matrix_scan_key(uint32_t row_line, uint32_t col_line) {
     }
 }
 
+__attribute__ ((weak))
+void pok3r_enable_leds(void) {
+};
+
+__attribute__ ((weak))
+void pok3r_disable_leds(void) {
+};
+
 uint8_t matrix_scan(void) {
     // cache of input ports for columns
     static uint16_t port_cache[3];
 
+    pok3r_disable_leds();
     // scan each row
     for (int row = 0; row < MATRIX_ROWS; row++) {
         palClearLine(row_list[row]);
@@ -102,6 +111,7 @@ uint8_t matrix_scan(void) {
         }
     }
 
+    pok3r_enable_leds();
     matrix_scan_quantum();
     return 1;
 }

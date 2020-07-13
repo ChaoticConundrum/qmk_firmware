@@ -60,7 +60,6 @@
 #define PAD_USART_TX                8
 
 #define LINE_SEL1                   PAL_LINE(IOPORTA, 8)
-#define LINE_SEL2                   PAL_LINE(IOPORTA, 9)
 
 // SPI
 #define LINE_SPI_SCK                PAL_LINE(IOPORTB, 7)
@@ -83,12 +82,25 @@
 #define WIPE_SWITCH_ROW             LINE_DIP4_ROW
 #define WIPE_SWITCH_COL             LINE_DIP4_COL
 
-#define LINE_TPPWR                  PAL_LINE(IOPORTA, 10)   // !
-#define LINE_BLPWM                  PAL_LINE(IOPORTA, 14)   // !
-#define LINE_BLEN                   PAL_LINE(IOPORTA, 15)   // !
-#define LINE_PB0                    PAL_LINE(IOPORTB, 0)    // !
-#define LINE_LED65                  PAL_LINE(IOPORTB, 1)    // !
-#define LINE_TPREQ                  PAL_LINE(IOPORTC, 11)   // !
+/* LED Matrix */
+#define LINE_LED_VOLTAGE            PAL_LINE(IOPORTA, 9)
+#define LINE_OD_RED1                PAL_LINE(IOPORTC, 3)
+#define LINE_OD_RED2                PAL_LINE(IOPORTB, 2)
+#define LINE_OD_RED3                PAL_LINE(IOPORTC, 7)
+#define LINE_TROW1                  PAL_LINE(IOPORTA, 8)
+/* 74LV164 shift register for TROW2-TROW9 */
+#define LINE_LED_SHIFT_DATA         PAL_LINE(IOPORTC, 0)
+#define LINE_LED_SHIFT_CLK          PAL_LINE(IOPORTC, 1)
+#define LINE_LED_SHIFT_CLR          PAL_LINE(IOPORTC, 2)
+
+#define LINE_TCOL1                  PAL_LINE(IOPORTC, 11)
+#define LINE_TCOL2                  PAL_LINE(IOPORTC, 10)
+#define LINE_TCOL3                  PAL_LINE(IOPORTC, 9)
+#define LINE_TCOL4                  PAL_LINE(IOPORTA, 7)
+#define LINE_TCOL5                  PAL_LINE(IOPORTA, 2)
+#define LINE_TCOL6                  PAL_LINE(IOPORTA, 1)
+#define LINE_TCOL7                  PAL_LINE(IOPORTA, 0)
+#define LINE_TCOL8                  PAL_LINE(IOPORTB, 6)
 
 #if !defined(_FROM_ASM_)
 #ifdef __cplusplus
